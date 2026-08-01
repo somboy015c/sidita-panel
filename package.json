@@ -1,0 +1,49 @@
+{
+  "name": "sidita-panel",
+  "version": "1.0.0",
+  "description": "Sidita Panel - desktop admin dashboard (Windows & macOS), wrapping the sidita-admin web app with Electron.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "sync-web": "bash scripts/sync-web.sh",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^43.2.0",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "com.sidita.panel",
+    "productName": "Sidita Panel",
+    "directories": {
+      "buildResources": "build",
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "www/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": ["nsis"],
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "artifactName": "sidita-panel.${ext}"
+    },
+    "mac": {
+      "target": ["dmg"],
+      "icon": "build/icon.png",
+      "category": "public.app-category.business",
+      "artifactName": "sidita-panel.${ext}"
+    },
+    "dmg": {
+      "artifactName": "sidita-panel.${ext}"
+    }
+  }
+}

@@ -1,0 +1,49 @@
+name: Build Windows App
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Windows installer
+        run: npm run build:win
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sidita-panel-windows
+          path: dist/sidita-panel.exe
+
+      # Publishes to a permanent GitHub Release tagged "latest-windows" —
+      # one stable URL that never changes, even though the file behind it
+      # is replaced on every build:
+      #   https://github.com/<you>/<repo>/releases/download/latest-windows/sidita-panel.exe
+      - name: Publish to "latest-windows" release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest-windows
+          name: Latest Windows Build
+          body: >
+            Automatically built from commit ${{ github.sha }}. This
+            installer is unsigned, so Windows SmartScreen may warn on first
+            run — click "More info" → "Run anyway" to proceed.
+          files: dist/sidita-panel.exe
+          make_latest: false

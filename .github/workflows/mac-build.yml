@@ -1,0 +1,51 @@
+name: Build macOS App
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  build-mac:
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build macOS app
+        run: npm run build:mac
+
+      - name: Upload dmg artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sidita-panel-mac
+          path: dist/sidita-panel.dmg
+
+      # Publishes to a permanent GitHub Release tagged "latest-mac" — one
+      # stable URL that never changes, even though the file behind it is
+      # replaced on every build:
+      #   https://github.com/<you>/<repo>/releases/download/latest-mac/sidita-panel.dmg
+      - name: Publish to "latest-mac" release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest-mac
+          name: Latest macOS Build
+          body: >
+            Automatically built from commit ${{ github.sha }}. This app is
+            unsigned/un-notarized, so macOS Gatekeeper will block it on
+            first launch — right-click the app → "Open" → "Open" to bypass
+            (only needed once). See README for how to remove this warning
+            with an Apple Developer ID.
+          files: dist/sidita-panel.dmg
+          make_latest: false
