@@ -24,8 +24,8 @@ function createWindow() {
   // button on Windows), so give users an explicit way out: F11 toggles it,
   // matching the convention most browsers and apps already use.
   win.webContents.on('before-input-event', (event, input) => {
-    if (input.type === 'keyDown' && input.key === 'F11') {
-      win.setFullScreen(!win.isFullScreen());
+    if (input.type === 'keyDown' && input.key === 'Escape' && win.isFullScreen()) {
+      win.setFullScreen(false);
     }
   });
 
