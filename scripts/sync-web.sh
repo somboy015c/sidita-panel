@@ -22,5 +22,13 @@ cp -r "$TMP_DIR"/* "$WWW_DIR"/
 
 rm -rf "$TMP_DIR"
 
+echo "==> Injecting app-only overrides (overrides.css)"
+OVERRIDES_DIR="$(dirname "${BASH_SOURCE[0]}")/../overrides"
+cp "$OVERRIDES_DIR/overrides.css" "$WWW_DIR/overrides.css"
+INDEX_FILE="$WWW_DIR/index.html"
+if [ -f "$INDEX_FILE" ] && ! grep -q "overrides.css" "$INDEX_FILE"; then
+  perl -i -pe 's{</head>}{  <link rel="stylesheet" href="overrides.css">\n</head>}' "$INDEX_FILE"
+fi
+
 echo "==> Done. Review changes with 'git status', then commit and push."
 echo "    (No native project to re-sync here — Electron just loads www/ directly.)"

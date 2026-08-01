@@ -1,0 +1,10 @@
+/* App-only overrides — hidden from the wrapped desktop app but not from
+   the live admin site, since these elements don't make sense once you're
+   already inside the installed app. Injected by scripts/sync-web.sh after
+   every sync, so this survives re-syncing www/ from the website repo. */
+
+/* "Download App" button + its platform dropdown — redundant once the app
+   is already installed */
+.download-dropdown-wrap {
+  display: none !important;
+}

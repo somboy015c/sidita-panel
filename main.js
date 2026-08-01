@@ -12,11 +12,21 @@ function createWindow() {
     title: 'Sidita Panel',
     backgroundColor: '#0A4E36',
     icon: path.join(__dirname, 'build', 'icon.png'),
+    fullscreen: true,
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
     },
+  });
+
+  // True fullscreen hides the window chrome entirely (no title bar/close
+  // button on Windows), so give users an explicit way out: F11 toggles it,
+  // matching the convention most browsers and apps already use.
+  win.webContents.on('before-input-event', (event, input) => {
+    if (input.type === 'keyDown' && input.key === 'F11') {
+      win.setFullScreen(!win.isFullScreen());
+    }
   });
 
   // Open any target="_blank" links (e.g. the embedded Google Map) in the

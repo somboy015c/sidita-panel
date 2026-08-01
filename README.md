@@ -21,6 +21,34 @@ Your site already calls the same live backend (`sidita-backend.onrender.com`)
 as the mobile app, so the desktop app works identically — just full-screen
 in its own window with a native icon instead of a browser tab.
 
+## Repo secret required: GH_TOKEN
+
+Same as the mobile project: the release-publishing steps in
+`windows-build.yml` and `mac-build.yml` authenticate with a personal access
+token stored as the `GH_TOKEN` repo secret, rather than the default
+`GITHUB_TOKEN`. Make sure that secret exists with `contents: write` access,
+or the release publish step will fail.
+
+## Fullscreen behavior
+
+The app launches in true fullscreen (no title bar, no window chrome) via
+`fullscreen: true` in `main.js`. Since that hides the normal way to
+minimize/resize/close, **F11 toggles fullscreen on/off** — without it,
+users on Windows would have no way to get back to their desktop. If you'd
+rather it just launch maximized (keeping the title bar and window
+controls) instead of true fullscreen, change `fullscreen: true` to
+`show: false` + call `win.maximize()` before `win.show()` in `main.js`.
+
+## App-only overrides (hiding UI elements just for the app)
+
+`overrides/overrides.css` hides the "Download App" button and its platform
+dropdown (`.download-dropdown-wrap`) — it doesn't make sense to prompt
+someone to download the app when they're already running it.
+`scripts/sync-web.sh` injects this file into `www/index.html` after every
+sync, so it keeps applying even as the admin site content updates. To
+change what's hidden, edit `overrides/overrides.css` directly (not
+`www/index.html`, which gets overwritten on the next sync).
+
 ## Quick start: from upload to download link
 
 1. **Create a GitHub repo** and upload this whole `sidita-panel` folder to
