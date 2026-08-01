@@ -74,16 +74,14 @@
             text-rendering: auto;
         }
 
-        .fas,
+       .fas,
         .fa-solid,
         .far,
         .fa-regular,
         .fal,
         .fa-light,
         .fat,
-        .fa-thin,
-        .fab,
-        .fa-brands {
+        .fa-thin {
             font-family: 'Font Awesome 6 Free';
         }
 
@@ -1563,15 +1561,11 @@
                                 <i class="fas fa-download"></i> Download App
                             </button>
                             <div class="dropdown-menu" id="downloadDropdownMenu">
-                                <button class="dropdown-item" data-platform="mac">
-                                    <i class="fab fa-apple"></i> Mac
-                                </button>
                                 <button class="dropdown-item" data-platform="windows">
-                                    <i class="fab fa-windows"></i> Windows
+                                    <i class="fa-brands fa-windows"></i> Windows
                                 </button>
-                                <div class="dropdown-divider"></div>
-                                <button class="dropdown-item" style="color:var(--muted);font-size:0.75rem;cursor:default;justify-content:center;" disabled>
-                                    <i class="fas fa-info-circle"></i> Admin setup only
+                                <button class="dropdown-item" data-platform="mac">
+                                    <i class="fa-brands fa-apple"></i> Mac
                                 </button>
                             </div>
                         </div>
@@ -1671,8 +1665,8 @@
                             </div>
                             <div class="table-container">
                                 <table class="data-table" id="requestsTable">
-                                    <thead><th>Customer</th><th>Vehicle</th><th>Type</th><th>Dates</th><th>Status</th><th>Update</th></thead>
-                                    <tbody id="requestsTableBody"><tr><td colspan="6" style="text-align:center; padding:30px; color:var(--muted);">loading requests&hellip;</td></tr></tbody>
+                                    <thead><th>Customer</th><th>Vehicle</th><th>Type</th><th>Dates</th><th>Amount</th><th>Status</th><th>Update</th><th></th></thead>
+                                    <tbody id="requestsTableBody"><tr><td colspan="8" style="text-align:center; padding:30px; color:var(--muted);">loading requests&hellip;</td></tr></tbody>
                                 </table>
                             </div>
                         </div>
@@ -2125,13 +2119,22 @@
             $$('.dropdown-item[data-platform]').forEach(item => {
                 item.addEventListener('click', (e) => {
                     e.stopPropagation();
+            
                     const platform = item.dataset.platform;
+            
+                    const downloadUrls = {
+                        mac: 'https://github.com/somboy015c/sidita-panel/releases/download/latest-mac/sidita-panel.dmg',
+                        windows: 'https://github.com/somboy015c/sidita-panel/releases/download/latest-windows/sidita-panel.exe'
+                    };
+            
                     const name = platform === 'mac' ? 'Mac' : 'Windows';
-                    // In a real implementation, replace these URLs with actual download links.
-                    // For now we show a notification and close the dropdown.
+            
                     showNotification(`${name} download will begin shortly.`, 'success');
+            
                     dropdownMenu.classList.remove('open');
-                    // Example: window.location.href = platform === 'mac' ? '/downloads/sidita-mac.dmg' : '/downloads/sidita-windows.exe';
+            
+                    // Start download
+                    window.location.href = downloadUrls[platform];
                 });
             });
 
@@ -3046,7 +3049,7 @@
                     renderRequests(data);
                 } catch (err) {
                     $('#requestsTableBody').innerHTML =
-                        `<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--muted);">couldn't load requests: ${err.message}</td></tr>`;
+                        `<tr><td colspan="8" style="text-align:center; padding:30px; color:var(--muted);">couldn't load requests: ${err.message}</td></tr>`;
                 }
             }
 
@@ -3062,7 +3065,7 @@
                 const body = $('#requestsTableBody');
                 if (!list.length) {
                     body.innerHTML =
-                        '<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--muted);">no requests in this filter.</td></tr>';
+                        '<tr><td colspan="8" style="text-align:center; padding:30px; color:var(--muted);">no requests in this filter.</td></tr>';
                     return;
                 }
                 body.innerHTML = list.map(r => `
@@ -3071,12 +3074,14 @@
                             <td>${r.vehicle ? `<a href="#" data-view-vehicle="${r.vehicle._id}" style="color:var(--primary); font-weight:600;">${r.vehicle.name} <i class="fas fa-external-link-alt" style="font-size:0.7em;"></i></a>` : '&mdash;'}</td>
                             <td style="text-transform:capitalize;">${r.type}</td>
                             <td>${r.startDate ? new Date(r.startDate).toLocaleDateString() : '&mdash;'}${r.endDate ? ' &rarr; ' + new Date(r.endDate).toLocaleDateString() : ''}</td>
+                            <td style="font-weight:700; white-space:nowrap;">${r.totalValue ? fmtMoney(r.totalValue) : '<span style="color:var(--muted); font-weight:400;">&mdash;</span>'}</td>
                             <td><span class="status-badge ${requestBadgeClass(r.status)}">${r.status}</span></td>
                             <td>
                                 <select data-status-for="${r._id}" class="form-control" style="padding:6px 10px; font-size:0.8rem;">
                                     ${['pending','approved','active','completed','cancelled'].map(s=>`<option value="${s}" ${s===r.status?'selected':''}>${s}</option>`).join('')}
                                 </select>
                             </td>
+                            <td><button type="button" class="btn btn-sm btn-danger" data-delete-request="${r._id}" data-request-customer="${r.customerName}" title="Delete request"><i class="fas fa-trash"></i></button></td>
                         </tr>
                     `).join('');
                 $$('[data-status-for]').forEach(sel => sel.addEventListener('change', async () => {
@@ -3092,6 +3097,16 @@
                     e.preventDefault();
                     const req = requestsCache.find(r => r.vehicle && r.vehicle._id === link.dataset.viewVehicle);
                     if (req && req.vehicle) openVehicleDetailModal(req.vehicle);
+                }));
+                $$('[data-delete-request]').forEach(btn => btn.addEventListener('click', async () => {
+                    const ok = await askConfirm(`Delete the request from ${btn.dataset.requestCustomer}? This cannot be undone.`, { title: 'Delete request' });
+                    if (!ok) return;
+                    showSpinner();
+                    try {
+                        await api('/leases/' + btn.dataset.deleteRequest, { method: 'DELETE' });
+                        showNotification('Request deleted', 'success');
+                        await Promise.all([loadDashboard(), loadRequests(currentRequestFilter)]);
+                    } catch (err) { showNotification('Error: ' + err.message, 'error'); } finally { hideSpinner(); }
                 }));
             }
 
