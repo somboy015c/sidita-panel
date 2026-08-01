@@ -1,7 +1,7 @@
 {
   "name": "sidita-panel",
   "version": "1.0.0",
-  "description": "Sidita Panel - desktop admin dashboard (Windows & macOS), wrapping the sidita-admin web app with Electron.",
+  "description": "Sidita Panel.",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
