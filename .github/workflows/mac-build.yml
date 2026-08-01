@@ -24,6 +24,8 @@ jobs:
         run: npm ci
 
       - name: Build macOS app
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: npm run build:mac
 
       - name: Upload dmg artifact
