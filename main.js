@@ -45,7 +45,6 @@ function createMainWindow() {
       sandbox: true,
     },
   });
-
   // True fullscreen hides the window chrome entirely (no title bar/close
   // button on Windows), so give users explicit ways out: F11 toggles it
   // (matching browser convention), and Esc always exits fullscreen (never
