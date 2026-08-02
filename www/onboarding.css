@@ -1,0 +1,109 @@
+/* Onboarding overlay — first-run only, injected by scripts/sync-web.sh.
+   Sits on top of the already-loaded site; dismissing it just sets a flag
+   and fades it out, it never touches the site's own DOM. */
+
+#sidita-onboarding {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 48px 28px 36px;
+  box-sizing: border-box;
+  background: linear-gradient(135deg, #17915F 0%, #0A4E36 100%);
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  text-align: center;
+  transition: opacity 0.35s ease;
+}
+
+#sidita-onboarding.sidita-onboarding-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#sidita-onboarding .sidita-onb-skip {
+  align-self: flex-end;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 15px;
+  padding: 8px 4px;
+  cursor: pointer;
+}
+
+#sidita-onboarding .sidita-onb-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 420px;
+}
+
+#sidita-onboarding .sidita-onb-icon {
+  width: 88px;
+  height: 88px;
+  border-radius: 24px;
+  background: linear-gradient(160deg, #F0D27A 0%, #A9841A 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  font-weight: 700;
+  color: #0A4E36;
+  margin-bottom: 28px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+}
+
+#sidita-onboarding .sidita-onb-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 12px;
+}
+
+#sidita-onboarding .sidita-onb-desc {
+  font-size: 15px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
+}
+
+#sidita-onboarding .sidita-onb-dots {
+  display: flex;
+  gap: 8px;
+  margin: 28px 0 20px;
+}
+
+#sidita-onboarding .sidita-onb-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  transition: background 0.25s ease, width 0.25s ease;
+}
+
+#sidita-onboarding .sidita-onb-dot.active {
+  background: #D4AA33;
+  width: 22px;
+  border-radius: 5px;
+}
+
+#sidita-onboarding .sidita-onb-next {
+  width: 100%;
+  max-width: 340px;
+  padding: 15px 20px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(160deg, #F0D27A 0%, #A9841A 100%);
+  color: #0A4E36;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+#sidita-onboarding .sidita-onb-next:active {
+  opacity: 0.85;
+}

@@ -22,12 +22,17 @@ cp -r "$TMP_DIR"/* "$WWW_DIR"/
 
 rm -rf "$TMP_DIR"
 
-echo "==> Injecting app-only overrides (overrides.css)"
+echo "==> Injecting app-only overrides (overrides.css, onboarding)"
 OVERRIDES_DIR="$(dirname "${BASH_SOURCE[0]}")/../overrides"
 cp "$OVERRIDES_DIR/overrides.css" "$WWW_DIR/overrides.css"
+cp "$OVERRIDES_DIR/onboarding.css" "$WWW_DIR/onboarding.css"
+cp "$OVERRIDES_DIR/onboarding.js" "$WWW_DIR/onboarding.js"
 INDEX_FILE="$WWW_DIR/index.html"
 if [ -f "$INDEX_FILE" ] && ! grep -q "overrides.css" "$INDEX_FILE"; then
-  perl -i -pe 's{</head>}{  <link rel="stylesheet" href="overrides.css">\n</head>}' "$INDEX_FILE"
+  perl -i -pe 's{</head>}{  <link rel="stylesheet" href="overrides.css">\n  <link rel="stylesheet" href="onboarding.css">\n</head>}' "$INDEX_FILE"
+fi
+if [ -f "$INDEX_FILE" ] && ! grep -q "onboarding.js" "$INDEX_FILE"; then
+  perl -i -pe 's{</body>}{  <script src="onboarding.js"></script>\n</body>}' "$INDEX_FILE"
 fi
 
 echo "==> Done. Review changes with 'git status', then commit and push."

@@ -24,6 +24,7 @@
     },
     "files": [
       "main.js",
+      "splash.html",
       "www/**/*",
       "package.json"
     ],

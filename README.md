@@ -21,6 +21,28 @@ Your site already calls the same live backend (`sidita-backend.onrender.com`)
 as the mobile app, so the desktop app works identically — just full-screen
 in its own window with a native icon instead of a browser tab.
 
+## Splash screen & onboarding
+
+- **Native splash window** — `splash.html` (project root, not inside
+  `www/`, so syncing never touches it) is a small frameless window shown
+  the instant the app launches — the emerald/gold "S" mark plus a spinner.
+  `main.js` opens it immediately, loads the real window hidden behind it,
+  and only swaps them once the real content has actually rendered
+  (`ready-to-show`) — so there's never a flash of blank white.
+- **First-run onboarding carousel** — a 3-slide welcome overlay shown only
+  the first time the app runs on a given machine (tracked via
+  `localStorage`, which persists across restarts). Skippable, and
+  navigable with arrow keys or Enter.
+
+Both live in `overrides/onboarding.css` and `overrides/onboarding.js`, and
+get copied + injected into `www/index.html` by `scripts/sync-web.sh` on
+every sync — same mechanism `overrides.css` already uses, so a website
+update never wipes them out.
+
+**To customize the onboarding copy**, edit the `SLIDES` array at the top of
+`overrides/onboarding.js`. **To customize the splash screen**, edit
+`splash.html` directly — it's a plain, self-contained HTML file.
+
 ## Repo secret required: GH_TOKEN
 
 Same as the mobile project: the release-publishing steps in
