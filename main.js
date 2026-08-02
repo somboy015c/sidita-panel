@@ -41,28 +41,9 @@ function createWindow() {
   win.once('ready-to-show', () => win.show());
 }
 
-// Minimal menu bar — just enough for copy/paste, reload, and dev tools.
+// No menu bar — removes the Edit/View/Window ribbon entirely.
 function buildMenu() {
-  const template = [
-    ...(isMac ? [{ role: 'appMenu' }] : []),
-    { role: 'editMenu' },
-    {
-      label: 'View',
-      submenu: [
-        { role: 'reload' },
-        { role: 'forceReload' },
-        { role: 'toggleDevTools' },
-        { type: 'separator' },
-        { role: 'resetZoom' },
-        { role: 'zoomIn' },
-        { role: 'zoomOut' },
-        { type: 'separator' },
-        { role: 'togglefullscreen' },
-      ],
-    },
-    { role: 'windowMenu' },
-  ];
-  Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+  Menu.setApplicationMenu(null);
 }
 
 app.whenReady().then(() => {
